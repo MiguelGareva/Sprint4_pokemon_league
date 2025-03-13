@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('tipo');
             $table->integer('stats');
             $table->integer('nivel');
-            $table->foreignId('entrenador_id')->constrained('entrenadores')->onDelete('cascade');
+            $table->foreignId('entrenador_id')->nullable()->constrained('entrenadores')->onDelete('cascade');
             $table->timestamps();
         });
     }
