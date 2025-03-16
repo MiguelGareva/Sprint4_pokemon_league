@@ -11,9 +11,6 @@ Route::get('/', function () {
 
 Route::resource('entrenadores', EntrenadorController::class)->parameters([
     'entrenadores' => 'entrenador']);
-
-Route::resource('pokemon', PokemonController::class);
-
 // Ruta para mostrar Pokémon disponibles para capturar
 Route::get('/pokemon/available', [PokemonController::class, 'available'])->name('pokemon.available');
 
@@ -23,6 +20,7 @@ Route::post('/pokemon/{pokemon}/capture', [PokemonController::class, 'capture'])
 // Ruta para liberar un Pokémon
 Route::post('/pokemon/{pokemon}/release', [PokemonController::class, 'release'])->name('pokemon.release');
 
+Route::resource('pokemon', PokemonController::class);
 
 Route::get('/combates', function() {
     return redirect()->route('entrenadores.index')

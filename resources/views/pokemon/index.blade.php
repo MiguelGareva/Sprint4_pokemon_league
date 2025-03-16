@@ -9,7 +9,8 @@
                 <h1 class="text-2xl font-bold text-gray-800">Pokédex de la Liga</h1>
                 <p class="text-gray-600 mt-1">Todos los Pokémon registrados en la liga, capturados y salvajes</p>
             </div>
-            <a href="{{ route('pokemon.available') }}" 
+            <!-- Link correcto sin parámetros query -->
+            <a href="{{ url('/pokemon/available') }}" 
                class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded inline-flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
@@ -18,48 +19,83 @@
             </a>
         </div>
 
-        <!-- Filtros -->
+        <!-- Filtros (versión funcional) -->
         <div class="bg-gray-100 p-4 rounded-lg mb-6">
             <h2 class="text-lg font-semibold mb-2">Filtros</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label for="filtroTipo" class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
-                    <select id="filtroTipo" class="w-full rounded border-gray-300 shadow-sm">
-                        <option value="">Todos los tipos</option>
-                        <option value="Fuego">Fuego</option>
-                        <option value="Agua">Agua</option>
-                        <option value="Planta">Planta</option>
-                        <option value="Eléctrico">Eléctrico</option>
-                        <option value="Normal">Normal</option>
-                        <option value="Volador">Volador</option>
-                        <option value="Veneno">Veneno</option>
-                        <option value="Tierra">Tierra</option>
-                        <option value="Psíquico">Psíquico</option>
-                        <option value="Lucha">Lucha</option>
-                        <option value="Roca">Roca</option>
-                        <option value="Hielo">Hielo</option>
-                        <option value="Fantasma">Fantasma</option>
-                        <option value="Dragón">Dragón</option>
-                        <option value="Siniestro">Siniestro</option>
-                        <option value="Acero">Acero</option>
-                        <option value="Hada">Hada</option>
-                        <option value="Bicho">Bicho</option>
-                    </select>
+            <form action="{{ route('pokemon.index') }}" method="GET">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label for="tipo" class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
+                        <select id="tipo" name="tipo" class="w-full rounded border-gray-300 shadow-sm">
+                            <option value="">Todos los tipos</option>
+                            <option value="Fuego" {{ request('tipo') == 'Fuego' ? 'selected' : '' }}>Fuego</option>
+                            <option value="Agua" {{ request('tipo') == 'Agua' ? 'selected' : '' }}>Agua</option>
+                            <option value="Planta" {{ request('tipo') == 'Planta' ? 'selected' : '' }}>Planta</option>
+                            <option value="Eléctrico" {{ request('tipo') == 'Eléctrico' ? 'selected' : '' }}>Eléctrico</option>
+                            <option value="Normal" {{ request('tipo') == 'Normal' ? 'selected' : '' }}>Normal</option>
+                            <option value="Volador" {{ request('tipo') == 'Volador' ? 'selected' : '' }}>Volador</option>
+                            <option value="Veneno" {{ request('tipo') == 'Veneno' ? 'selected' : '' }}>Veneno</option>
+                            <option value="Tierra" {{ request('tipo') == 'Tierra' ? 'selected' : '' }}>Tierra</option>
+                            <option value="Psíquico" {{ request('tipo') == 'Psíquico' ? 'selected' : '' }}>Psíquico</option>
+                            <option value="Lucha" {{ request('tipo') == 'Lucha' ? 'selected' : '' }}>Lucha</option>
+                            <option value="Roca" {{ request('tipo') == 'Roca' ? 'selected' : '' }}>Roca</option>
+                            <option value="Hielo" {{ request('tipo') == 'Hielo' ? 'selected' : '' }}>Hielo</option>
+                            <option value="Fantasma" {{ request('tipo') == 'Fantasma' ? 'selected' : '' }}>Fantasma</option>
+                            <option value="Dragón" {{ request('tipo') == 'Dragón' ? 'selected' : '' }}>Dragón</option>
+                            <option value="Siniestro" {{ request('tipo') == 'Siniestro' ? 'selected' : '' }}>Siniestro</option>
+                            <option value="Acero" {{ request('tipo') == 'Acero' ? 'selected' : '' }}>Acero</option>
+                            <option value="Hada" {{ request('tipo') == 'Hada' ? 'selected' : '' }}>Hada</option>
+                            <option value="Bicho" {{ request('tipo') == 'Bicho' ? 'selected' : '' }}>Bicho</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="estado" class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                        <select id="estado" name="estado" class="w-full rounded border-gray-300 shadow-sm">
+                            <option value="">Todos</option>
+                            <option value="disponible" {{ request('estado') == 'disponible' ? 'selected' : '' }}>Disponible</option>
+                            <option value="capturado" {{ request('estado') == 'capturado' ? 'selected' : '' }}>Capturado</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="busqueda" class="block text-sm font-medium text-gray-700 mb-1">Búsqueda</label>
+                        <div class="flex">
+                            <input type="text" id="busqueda" name="busqueda" value="{{ request('busqueda') }}" placeholder="Buscar por nombre..." class="w-full rounded-l border-gray-300 shadow-sm">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 rounded-r">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <label for="filtroEstado" class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
-                    <select id="filtroEstado" class="w-full rounded border-gray-300 shadow-sm">
-                        <option value="">Todos</option>
-                        <option value="disponible">Disponible</option>
-                        <option value="capturado">Capturado</option>
-                    </select>
+                <div class="mt-4 flex justify-end">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded">
+                        Aplicar filtros
+                    </button>
+                    <a href="{{ route('pokemon.index') }}" class="ml-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded">
+                        Limpiar
+                    </a>
                 </div>
-                <div>
-                    <label for="filtroBusqueda" class="block text-sm font-medium text-gray-700 mb-1">Búsqueda</label>
-                    <input type="text" id="filtroBusqueda" placeholder="Buscar por nombre..." class="w-full rounded border-gray-300 shadow-sm">
-                </div>
-            </div>
+            </form>
         </div>
+
+        @if(session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if(session('info'))
+            <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-4">
+                {{ session('info') }}
+            </div>
+        @endif
 
         @if($pokemon->isEmpty())
             <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
@@ -162,7 +198,8 @@
                                                 </button>
                                             </form>
                                         @else
-                                            <a href="{{ route('pokemon.available') }}" class="text-green-600 hover:text-green-900" title="Capturar">
+                                            <!-- Enlace directo a la URL absoluta para evitar problemas con la ruta -->
+                                            <a href="{{ url('/pokemon/available') }}" class="text-green-600 hover:text-green-900" title="Capturar">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
                                                 </svg>
@@ -177,42 +214,4 @@
             </div>
         @endif
     </div>
-
-    <!-- Script para filtrado en el cliente -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const filtroTipo = document.getElementById('filtroTipo');
-            const filtroEstado = document.getElementById('filtroEstado');
-            const filtroBusqueda = document.getElementById('filtroBusqueda');
-            const filas = document.querySelectorAll('tbody tr');
-
-            function aplicarFiltros() {
-                const valorTipo = filtroTipo.value.toLowerCase();
-                const valorEstado = filtroEstado.value.toLowerCase();
-                const valorBusqueda = filtroBusqueda.value.toLowerCase();
-
-                filas.forEach(fila => {
-                    const tipo = fila.querySelector('td:nth-child(2)').textContent.trim().toLowerCase();
-                    const estado = fila.querySelector('td:nth-child(5)').textContent.trim().toLowerCase();
-                    const nombre = fila.querySelector('td:nth-child(1)').textContent.trim().toLowerCase();
-
-                    const cumpleFiltroTipo = valorTipo === '' || tipo.includes(valorTipo);
-                    const cumpleFiltroEstado = valorEstado === '' || 
-                                              (valorEstado === 'disponible' && estado.includes('disponible')) ||
-                                              (valorEstado === 'capturado' && estado.includes('capturado'));
-                    const cumpleFiltroBusqueda = valorBusqueda === '' || nombre.includes(valorBusqueda);
-
-                    if (cumpleFiltroTipo && cumpleFiltroEstado && cumpleFiltroBusqueda) {
-                        fila.style.display = '';
-                    } else {
-                        fila.style.display = 'none';
-                    }
-                });
-            }
-
-            filtroTipo.addEventListener('change', aplicarFiltros);
-            filtroEstado.addEventListener('change', aplicarFiltros);
-            filtroBusqueda.addEventListener('input', aplicarFiltros);
-        });
-    </script>
 @endsection

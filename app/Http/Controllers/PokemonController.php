@@ -11,35 +11,81 @@ class PokemonController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $pokemon = Pokemon::with('entrenador')->get();
+        $query = Pokemon::query();
+    
+        // Filtro por tipo
+        if ($request->filled('tipo')) {
+            $query->where('tipo', $request->tipo);
+        }
+        
+        // Filtro por estado (capturado/disponible)
+        if ($request->filled('estado')) {
+            if ($request->estado == 'disponible') {
+                $query->whereNull('entrenador_id');
+            } elseif ($request->estado == 'capturado') {
+                $query->whereNotNull('entrenador_id');
+            }
+        }
+        
+        // Filtro por búsqueda (nombre)
+        if ($request->filled('busqueda')) {
+            $query->where('nombre', 'LIKE', '%' . $request->busqueda . '%');
+        }
+        
+        // Realizar la consulta y obtener resultados
+        $pokemon = $query->with('entrenador')->get();
+        
         return view('pokemon.index', compact('pokemon'));
     }
 
     /**
      * Show available pokemon.
+     * Modificado para manejar mejor los diferentes casos de redirección.
      */
-    public function available(Request $request){
+    public function available(Request $request)
+    {
+        // Log de diagnóstico
+        \Log::info('Método available llamado con request: ' . json_encode($request->all()));
+        
         $entrenador_id = $request->input('entrenador_id');
         $entrenador = null;
 
-        if($entrenador_id){
-            $entrenador = Entrenador::findOrFail($entrenador_id);
-
-            if($entrenador->pokemon->count() >= 3){
-                return redirect()->route('entrenadores.show', $entrenador)
-                ->with('error', 'Este entrenador ya ha alcanzado el máximo permitido de pokemons.');
+        if ($entrenador_id) {
+            // Intenta encontrar el entrenador
+            try {
+                $entrenador = Entrenador::findOrFail($entrenador_id);
+                
+                if ($entrenador->pokemon->count() >= 3) {
+                    return redirect()->route('entrenadores.show', $entrenador)
+                        ->with('error', 'Este entrenador ya ha alcanzado el máximo permitido de pokemons.');
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error al buscar entrenador: ' . $e->getMessage());
+                // Si no se encuentra el entrenador, continuamos sin él
             }
         }
 
         $pokemonDisponibles = Pokemon::whereNull('entrenador_id')->get();
 
-        if($pokemonDisponibles->isEmpty()){
+        if ($pokemonDisponibles->isEmpty() && $entrenador) {
             return redirect()->route('entrenadores.show', $entrenador)
-            ->with('info', 'No hay pokemon disponibles para capturar en este momento.');
+                ->with('info', 'No hay pokemon disponibles para capturar en este momento.');
+        } elseif ($pokemonDisponibles->isEmpty()) {
+            return redirect()->route('pokemon.index')
+                ->with('info', 'No hay pokemon disponibles para capturar en este momento.');
         }
-         return view('pokemon.available', compact('pokemonDisponibles', 'entrenador'));
+
+        try {
+            // Intenta renderizar la vista
+            return view('pokemon.available', compact('pokemonDisponibles', 'entrenador'));
+        } catch (\Exception $e) {
+            \Log::error('Error al renderizar vista available: ' . $e->getMessage());
+            // Fallback a la vista index
+            return redirect()->route('pokemon.index')
+                ->with('error', 'Hubo un problema al mostrar los Pokémon disponibles. Por favor, inténtalo más tarde.');
+        }
     }
 
     /**
@@ -47,26 +93,35 @@ class PokemonController extends Controller
      */
     public function capture(Request $request, Pokemon $pokemon)
     {
-        $validated = $request->validate([
-            'entrenador_id' => 'required|exists:entrenadores,id'
-        ]);
+        // Log para diagnóstico
+        \Log::info('Método capture llamado para pokemon ID: ' . $pokemon->id);
+        
+        try {
+            $validated = $request->validate([
+                'entrenador_id' => 'required|exists:entrenadores,id'
+            ]);
 
-        $entrenador = Entrenador::findOrFail($validated['entrenador_id']);
-        if ($entrenador->pokemon->count() >= 3) {
+            $entrenador = Entrenador::findOrFail($validated['entrenador_id']);
+            if ($entrenador->pokemon->count() >= 3) {
+                return redirect()->route('entrenadores.show', $entrenador)
+                    ->with('error', 'Este entrenador ya tiene el máximo de 3 Pokémon permitidos.');
+            }
+
+            if ($pokemon->entrenador_id !== null) {
+                return redirect()->route('pokemon.available', ['entrenador_id' => $entrenador->id])
+                    ->with('error', 'Este Pokemon ya ha sido capturado por otro entrenador.');
+            }
+
+            $pokemon->entrenador_id = $entrenador->id;
+            $pokemon->save();
+
             return redirect()->route('entrenadores.show', $entrenador)
-                ->with('error', 'Este entrenador ya tiene el máximo de 3 Pokémon permitidos.');
+                ->with('success', 'Has capturado un ' . $pokemon->nombre . ' con éxito.');
+        } catch (\Exception $e) {
+            \Log::error('Error en método capture: ' . $e->getMessage());
+            return redirect()->route('pokemon.index')
+                ->with('error', 'Ha ocurrido un error al intentar capturar el Pokémon. Por favor, inténtalo más tarde.');
         }
-
-        if($pokemon->entrenador_id !== null){
-            return redirect()->route('pokemon.available', ['entrenador_id' => $entrenador->id])
-                ->with('error', 'Este Pokemon ya ha sido capturado por otro entrenador.');
-        }
-
-        $pokemon->entrenador_id = $entrenador->id;
-        $pokemon->save();
-
-        return redirect()->route('entrenadores.show', $entrenador)
-            ->with('success', 'Has capturado un ' . $pokemon->nombre . ' con éxito.');
     }
 
     /**
@@ -109,6 +164,7 @@ class PokemonController extends Controller
 
         return redirect()->route('pokemon.show', $pokemon)->with('success', 'Pokemon actualizado correctamente');
     }
+    
     /**
      * Release a Pokemon from trainer
      */ 
@@ -124,8 +180,8 @@ class PokemonController extends Controller
 
         return redirect()->route('entrenadores.show', $entrenador)
         ->with('success', 'Has liberado a ' . $pokemon->nombre . ' con éxito.');
-
     }
+    
     /**
      * Remove the specified resource from storage.
      */
