@@ -16,8 +16,8 @@ class CombateService
 
      public function realizarCombate(Entrenador $entrenador1, Entrenador $entrenador2){
 
-        $pokemonEntrenador1 = $entrenador1->pokemon->get();
-        $pokemonEntrenador2 = $entrenador2->pokemon->get();
+        $pokemonEntrenador1 = $entrenador1->pokemon;
+        $pokemonEntrenador2 = $entrenador2->pokemon;
 
         $victoriasEntrenador1 = 0;
         $victoriasEntrenador2 = 0;
