@@ -115,7 +115,7 @@ Este proyecto está licenciado bajo la [Licencia MIT](LICENSE).
 
 Para cualquier consulta o sugerencia, puedes contactarme a través de:
 
-- Email: tuemail@ejemplo.com
+- Email: miguel.gareva@gmail.com
 - Twitter: próximamente.
 - LinkedIn: próximamente.
 
