@@ -22,10 +22,8 @@ Route::post('/pokemon/{pokemon}/release', [PokemonController::class, 'release'])
 
 Route::resource('pokemon', PokemonController::class);
 
-Route::get('/combates', function() {
-    return redirect()->route('entrenadores.index')
-                    ->with('info', 'La sección de Combates estará disponible próximamente');
-})->name('combates.index');
+Route::resource('combates', CombateController::class)->parameters([
+    'combates' => 'combate']);
 
 // Rutas para autenticación (placeholder para compatibilidad con las vistas)
 Route::get('/login', function() {
