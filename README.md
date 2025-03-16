@@ -1,7 +1,5 @@
 # 🏆 Liga Pokémon - Sistema de Gestión de Entrenadores y Combates
 
-![Banner de Liga Pokémon](https://i.imgur.com/JGyswQh.png)
-
 ## 📋 Descripción
 
 Liga Pokémon es una aplicación web desarrollada con Laravel y Tailwind CSS que simula un sistema de gestión para una liga de entrenadores Pokémon. Permite registrar entrenadores, capturar y entrenar Pokémon, y organizar combates para determinar quién es el mejor entrenador.
@@ -13,13 +11,6 @@ Liga Pokémon es una aplicación web desarrollada con Laravel y Tailwind CSS que
 - ⚔️ **Sistema de combates**: Organización de enfrentamientos entre entrenadores con un sistema automático de evaluación basado en estadísticas de los Pokémon.
 - 📊 **Sistema de puntuación**: Asignación de puntos basada en resultados de combates que permite establecer un ranking de entrenadores.
 - 🏅 **Ranking**: Visualización de los mejores entrenadores según sus puntos acumulados.
-
-## 🖥️ Capturas de pantalla
-
-<div align="center">
-  <img src="https://i.imgur.com/VdTQVfw.png" alt="Dashboard" width="45%">
-  <img src="https://i.imgur.com/l1KgQKo.png" alt="Combate" width="45%">
-</div>
 
 ## 🛠️ Tecnologías utilizadas
 
@@ -40,7 +31,7 @@ Liga Pokémon es una aplicación web desarrollada con Laravel y Tailwind CSS que
 
 1. **Clonar el repositorio**
    ```bash
-   git clone https://github.com/tuusuario/pokemon-league.git
+   git clone https://github.com/MiguelGareva/Sprint4_pokemon_league
    cd pokemon-league
    ```
 
@@ -133,7 +124,5 @@ Para cualquier consulta o sugerencia, puedes contactarme a través de:
 <div align="center">
   
   **¡Conviértete en el mejor entrenador Pokémon!**
-  
-  ![Pokeball](https://i.imgur.com/2Fxa3Py.png)
   
 </div>
