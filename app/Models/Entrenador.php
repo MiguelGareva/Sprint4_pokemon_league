@@ -34,6 +34,6 @@ class Entrenador extends Model
     }
 
     public function combates(){
-        return $this->combatesComoEntrenador1->merge($this->combateComoEntrenador2);
+        return $this->combatesComoEntrenador1->merge($this->combatesComoEntrenador2);
     }
 }
